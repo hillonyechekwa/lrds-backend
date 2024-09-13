@@ -1,6 +1,6 @@
 import { User } from "./user.entity";
 import { Service } from "./service.entity"
-import { Entity, JoinColumn, OneToOne, OneToMany, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, JoinColumn, OneToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity("stylist")
