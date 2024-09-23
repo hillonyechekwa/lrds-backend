@@ -1,5 +1,12 @@
-import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty } from "class-validator";
+import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum } from "class-validator";
 
+
+
+export enum ServiceCategories {
+    styling = 'styling',
+    cut = 'cut',
+    treatement = 'treatment'
+}
 export class ServDto{
     @IsString()
     @IsNotEmpty()
@@ -17,10 +24,13 @@ export class ServDto{
     @IsNotEmpty()
     readonly duration: Date
 
-    @IsString()
-    category: string;
+    @IsEnum(ServiceCategories)
+    @IsNotEmpty()
+    category: ServiceCategories;
 
     @IsNotEmpty()
     @IsNumber()
     readonly stylist: number
 }
+
+

@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, ManyToMany } from "typeorm";
 import { User } from "./user.entity";
 import { Stylist } from "./stylist.entity";
 import { Service } from "./service.entity";
+import { BookingStatus, ServiceLocationOptions } from "src/booking/dto/booking.dto";
 
 
 
@@ -9,7 +10,7 @@ import { Service } from "./service.entity";
 @Entity("booking")
 
 export class Booking {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: "booking_id"})
     id: number
 
     @ManyToOne(() => User, (user) => user.id)
@@ -17,9 +18,9 @@ export class Booking {
 
     @ManyToOne(() => Stylist, (stylist) => stylist.id)
     stylist: Stylist
-
-    @ManyToOne(() => Service, (service) => service.id)
-    service: Service
+    
+    @ManyToMany(() => Service, (service) => service.bookings)
+    services: Service[]
 
     @Column('date')
     date: Date
@@ -30,11 +31,11 @@ export class Booking {
     @Column('time')
     endTime: Date
 
-    @Column('text')
-    status: string
+    @Column({name: 'booking_status', default: BookingStatus.pending})
+    status: BookingStatus
 
-    @Column('text')
-    location: string
+    @Column({name: "booking_location", default: ServiceLocationOptions.shop})
+    location: ServiceLocationOptions
 
     @Column('int')
     totalPrice: number

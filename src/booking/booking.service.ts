@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from 'src/entities/booking.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { BookingDto } from './dto/booking.dto';
 import { Stylist } from 'src/entities/stylist.entity';
 import { User } from 'src/entities/user.entity';
@@ -26,7 +26,7 @@ export class BookingService {
         booking.date = bookingDto.date
         booking.startTime = bookingDto.startTime
         booking.endTime = bookingDto.endTime
-        booking.status = bookingDto.status //status at booking createing will always be pending
+        booking.status = bookingDto.status //set to default value on booking creation.
         booking.totalPrice = bookingDto.totalPrice
         booking.createdAt = bookingDto.createdAt
 
@@ -44,19 +44,7 @@ export class BookingService {
                 break;
         }                
 
-        //Just in case that didn't work. 😛
-        //resolve status
-        // switch (bookingDto.status) {
-        //     case "":
-        //         booking.status = bookingDto.status
-        //         break;
-        //     case "shop":
-        //         booking.status = bookingDto.status
-        //         break;
-        
-        //     default:
-        //         break;
-        // }
+    
 
         //resolve user
         const user = await this.userRepo.findOneBy({id: bookingDto.user})
@@ -69,13 +57,13 @@ export class BookingService {
 
 
         //resolve service
-        const service = await this.servRepo.findOneBy({id: bookingDto.service})
+        const services = await this.servRepo.findBy({ id: In(bookingDto.services)})
 
-        booking.service = service
+        booking.services = services
 
 
         //find a way to resolve service from stylist.
-        booking.stylist = service.stylist
+        booking.stylist = services.stylist
 
 
         return this.bookingRepo.save(booking)

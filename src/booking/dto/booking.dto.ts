@@ -1,5 +1,16 @@
-import {IsNumber, IsString, IsMilitaryTime, IsDateString, IsNotEmpty } from "class-validator";
+import {IsNumber, IsMilitaryTime, IsDateString, IsNotEmpty, IsEnum, IsArray } from "class-validator";
 
+
+export enum BookingStatus {
+    pending = "pending",
+    accepted = "accepted",
+    rejected = "rejected"
+}
+
+export enum ServiceLocationOptions {
+    home = "home",
+    shop = "shop"
+}
 
 export class BookingDto {
     @IsNumber()
@@ -10,9 +21,10 @@ export class BookingDto {
     @IsNotEmpty()
     readonly stylist: number;
 
+    @IsArray()
     @IsNumber()
     @IsNotEmpty()
-    readonly service: number;
+    readonly services: number[];
 
     @IsDateString()
     @IsNotEmpty()
@@ -26,11 +38,13 @@ export class BookingDto {
     @IsNotEmpty()
     endTime: Date;
 
-    @IsString() //pending, accepted, rejected
-    status: string;
+    @IsEnum(BookingStatus)
+    @IsNotEmpty()
+    status: BookingStatus;
 
-    @IsString() //home or shop
-    location: string
+    @IsEnum(ServiceLocationOptions) 
+    @IsNotEmpty()
+    location: ServiceLocationOptions
 
     @IsNumber()
     @IsNotEmpty()

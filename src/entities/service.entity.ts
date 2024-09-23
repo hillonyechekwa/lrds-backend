@@ -1,34 +1,35 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Stylist } from "./stylist.entity";
 import { Booking } from "./booking.entity";
+import { ServiceCategories } from "src/serv/dto/serv.dto";
 
 
 @Entity("service")
 
 
 export class Service {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: "id"})
     id: number
 
-    @Column()
+    @Column({name: "service_name", unique: true})
     name: string
 
-    @Column()
+    @Column({name: "service_description", nullable: true})
     description: string
 
-    @Column()
+    @Column({type: "integer"})
     price: number
 
     @Column('time')
     duration: Date;
-
-    @Column('text')
-    category: string
+    
+    @Column({name: "sercie_category", default: ServiceCategories.styling})
+    category: ServiceCategories
     
     @ManyToOne(() => Stylist, (stylist) => stylist.services)
     stylist: Stylist
 
 
-    @OneToMany(() => Booking, (bookings) => bookings.service)
+    @ManyToMany(() => Booking, (bookings) => bookings.services)
     bookings: Booking[]
 }

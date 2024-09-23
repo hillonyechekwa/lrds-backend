@@ -7,7 +7,7 @@ import { Entity, JoinColumn, OneToOne, OneToMany, PrimaryGeneratedColumn } from 
 
 export class Stylist {
     
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: "id"})
     id: number
 
     @OneToOne(() => User)

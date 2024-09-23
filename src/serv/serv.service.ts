@@ -31,7 +31,7 @@ export class ServService {
 
         //category checker
         switch (createServDto.category) {
-            case "haircut":
+            case "cut":
                 service.category = createServDto.category
                 break;
             case "styling":
