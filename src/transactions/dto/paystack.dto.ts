@@ -39,3 +39,6 @@ export type PaystackCreateTransactionResponseDto = {
     }
 }
 
+
+//TODO: add data shape for subaccount creation and split payments
+

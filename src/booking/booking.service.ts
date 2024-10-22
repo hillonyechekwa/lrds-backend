@@ -17,8 +17,8 @@ export class BookingService {
         @InjectRepository(User)
         private userRepo: Repository<User>,
         @InjectRepository(Service)
-        private servRepo: Repository<Service>
-    ) { }
+        private servRepo: Repository<Service>,
+    ) {}
     
 
     async createBooking(bookingDto: BookingDto): Promise<Booking> {
@@ -50,10 +50,11 @@ export class BookingService {
         const user = await this.userRepo.findOneBy({id: bookingDto.user})
 
         booking.user = user
-        //resolve stylist
-        // const stylist = await this.stylistRepo.findOneBy({id: bookingDto.stylist})
 
-        // booking.stylist = stylist
+        //resolve stylist
+        const stylist = await this.stylistRepo.findOneBy({id: bookingDto.stylist})
+
+        booking.stylist = stylist
 
 
         //resolve service
@@ -63,7 +64,7 @@ export class BookingService {
 
 
         //find a way to resolve service from stylist.
-        booking.stylist = services.stylist
+        // booking.stylist = services.stylist
 
 
         return this.bookingRepo.save(booking)

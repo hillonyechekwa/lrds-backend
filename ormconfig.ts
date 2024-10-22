@@ -9,7 +9,7 @@ import { Transaction } from "typeorm"
 
 const config : PostgresConnectionOptions = {
     type: "postgres",
-    database: "testDB",
+    database: "lrd",
     host: "localhost",
     port: 5432,
     username: "postgres", //?might be postgres

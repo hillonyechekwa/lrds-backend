@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Service } from 'src/entities/service.entity';
-import { Transaction } from 'src/entities/transaction.entity';
+import { ConfigService } from '@nestjs/config';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Service, Transaction])],
+  imports: [PrismaModule],
   controllers: [TransactionsController],
-  providers: [TransactionsService]
+  providers: [TransactionsService, ConfigService]
 })
 export class TransactionsModule {}

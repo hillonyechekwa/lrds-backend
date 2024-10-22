@@ -1,21 +1,36 @@
-import { User } from "./user.entity";
-import { Service } from "./service.entity"
-import { Entity, JoinColumn, OneToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+// import { User } from "./user.entity";
+import { ServiceEntity } from "./service.entity"
+import { ApiProperty } from "@nestjs/swagger";
+import { UserEntity } from "./user.entity";
+import { BookingEntity } from "./booking.entity";
 
 
-@Entity("stylist")
 
-export class Stylist {
+
+export class StylistEntity {
+    constructor(partial: Partial<StylistEntity>) {
+        Object.assign(this, partial)
+    }
     
-    @PrimaryGeneratedColumn({name: "id"})
+
+    @ApiProperty()    
     id: number
 
-    @OneToOne(() => User)
+    @ApiProperty({type: UserEntity})
+    user: UserEntity
 
-    @JoinColumn()
+    @ApiProperty()
+    userid: number
 
-    user: User
+    @ApiProperty()
+    rating: number
 
-    @OneToMany(() => Service, (services) => services.stylist)
-    services: Service[]
+    @ApiProperty({isArray: true, type: ServiceEntity})
+    services: []
+
+    @ApiProperty({isArray: true, type: BookingEntity})
+    booked: []
+
+    @ApiProperty()
+    createdAt: Date
 }

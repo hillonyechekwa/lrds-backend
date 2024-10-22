@@ -1,24 +1,25 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import {PaymentStatus} from "../transactions/dto/paystackwebhook.dto"
+import { PaymentStatus } from "../transactions/dto/paystackwebhook.dto"
+import { ApiProperty } from "@nestjs/swagger";
 
 
-@Entity({name: 'transactions'})
-export class Transaction{
-    @PrimaryGeneratedColumn({name: 'id'})
+
+export class TransactionEntity{
+
+    @ApiProperty()
     id:number
 
-    @Column({name: 'transaction_reference', nullable: true})
+    @ApiProperty()
     transactionReference: string
 
-    @Column({name: 'payment_link', nullable: true})
+    @ApiProperty()
     paymentLink: string
 
-    @Column({name: 'transaction_status', nullable: true})
+    @ApiProperty()
     transactionStatus: string
 
-    @Column({name: 'status', default: PaymentStatus.notPaid})
+    @ApiProperty({enum: PaymentStatus})
     status: PaymentStatus
 
-    @Column({name: 'booking_id'})
+    @ApiProperty()
     bookingId: number;
 }

@@ -1,6 +1,7 @@
-import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsOptional } from "class-validator";
+import { IsString, IsNumber, IsMilitaryTime,IsOptional, IsEnum } from "class-validator";
+import { ServiceCategories } from "./serv.dto";
 
-export class UpdateServ{
+export class UpdateServDto{
     @IsString()
     @IsOptional()
     name: string
@@ -15,17 +16,9 @@ export class UpdateServ{
     
     @IsMilitaryTime()
     @IsOptional()
-    readonly duration: Date
+    readonly duration: number
 
+    @IsEnum(ServiceCategories)
     @IsOptional()
-    @IsOptional()
-    category: string
-
-    @IsNotEmpty()
-    @IsNumber()
-    readonly stylist: number
-
-    @IsNotEmpty()
-    @IsNumber()
-    readonly bookings: number
+    category: ServiceCategories
 }

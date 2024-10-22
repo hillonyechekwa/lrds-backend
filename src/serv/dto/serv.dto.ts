@@ -1,4 +1,5 @@
-import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum } from "class-validator";
+import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum, IsDateString } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 
 
@@ -7,6 +8,7 @@ export enum ServiceCategories {
     cut = 'cut',
     treatement = 'treatment'
 }
+
 export class ServDto{
     @IsString()
     @IsNotEmpty()
@@ -22,7 +24,7 @@ export class ServDto{
     
     @IsMilitaryTime()
     @IsNotEmpty()
-    readonly duration: Date
+    readonly duration: number
 
     @IsEnum(ServiceCategories)
     @IsNotEmpty()
@@ -31,6 +33,11 @@ export class ServDto{
     @IsNotEmpty()
     @IsNumber()
     readonly stylist: number
+
+    @IsNotEmpty()
+    @IsDateString()
+    readonly createdAt: Date
+
 }
 
 

@@ -1,25 +1,44 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { Exclude } from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
+import { StylistEntity } from "./stylist.entity";
+import { BookingEntity } from "./booking.entity";
 
 
-@Entity("users")
-export class User {
-    @PrimaryGeneratedColumn({name: "id"})
+export class UserEntity {
+    constructor(partial: Partial<UserEntity>) {
+        Object.assign(this, partial)
+    }
+
+    @ApiProperty()    
     id: number
-
-    @Column({name: "first_name", unique: true, nullable: false})
+    
+    @ApiProperty()
     firstName: string
-
-    @Column({name: "last_name", unique: true, nullable: false})
+    
+    @ApiProperty()
     lastName: string
-
-    @Column({name: "user_name", unique: true, nullable: false})
+    
+    @ApiProperty()
     username: string
-
-    @Column({name: "email", unique: true, nullable: false})
+    
+    @ApiProperty()
     email: string
 
-    @Column({ nullable: false })
     @Exclude()
     password: string;
+
+    @ApiProperty({required: false})
+    profile?: string
+
+    @ApiProperty({required: false, type: StylistEntity})
+    stylist?: StylistEntity
+
+    @ApiProperty({isArray: true, type: BookingEntity})
+    bookings: []
+
+    @ApiProperty()
+    createdAt: Date
+
+    @ApiProperty()
+    updatedAt: Date
 }

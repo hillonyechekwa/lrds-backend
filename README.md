@@ -30,3 +30,14 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+
+### Migrations
+```bash
+$ npm run migration:generate -- db/migrations/<migration-name>
+```
+
+```bash
+$ npm run migration:run
+```
+

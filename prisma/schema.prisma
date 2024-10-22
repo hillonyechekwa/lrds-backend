@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User{
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String
+  username String @unique()
+  email String @unique()
+  password String @unique()
+  profile Profile?
+  styilst Stylist?
+  bookings Booking[] @relation(name: "UserBookings")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int @unique()
+  photo String?
+  location String?
+}
+
+model Stylist{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  rating Int @default(1)
+  services Service[]
+  booked Booking[] @relation(name: "StylistBookings")
+  createdAt DateTime @default(now())
+}
+
+model Service{
+  id Int @id @default(autoincrement())
+  name String
+  price Int
+  duration Int
+  stylist Stylist? @relation(fields: [stylistId], references: [id])
+  stylistId Int?
+  bookings Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Booking{
+  id Int @id @default(autoincrement())
+  user User @relation(name: "UserBookings", fields: [userId], references: [id])
+  userId Int @unique
+  stylist Stylist @relation(name: "StylistBookings", fields: [stylistId], references: [id])
+  stylistId Int @unique
+  services Service[]
+  startTime DateTime
+  endTime DateTime
+  status BookingStatus @default(PENDING)
+  location ServiceLocation @default(SHOP)
+  totalPrice Int
+  transaction Transaction?
+  createdAt DateTime @default(now())
+}
+
+
+model Transaction{
+  id Int @id @default(autoincrement())
+  transactionReference String
+  paymentLink String
+  transactionStatus String
+  status PaymentStatus @default(NOTPAID)
+  booking Booking @relation(fields: [bookingId], references: [id])
+  bookingId Int @unique
+  createdAt DateTime @default(now())
+}
+
+
+enum PaymentStatus{
+  PAID
+  NOTPAID
+}
+
+enum BookingStatus{
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+
+enum ServiceLocation{
+  HOME
+  SHOP
+}

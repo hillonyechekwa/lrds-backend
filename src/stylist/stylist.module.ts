@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { StylistController } from './stylist.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { StylistService } from './stylist.service';
-import { Stylist } from 'src/entities/stylist.entity';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Stylist])],
+  imports: [PrismaModule],
   controllers: [StylistController],
   providers: [StylistService],
   exports: [StylistService]

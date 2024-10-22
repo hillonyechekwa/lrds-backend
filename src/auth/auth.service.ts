@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { StylistService } from 'src/stylist/stylist.service';
 import { PayloadType } from 'src/types/payload.type';
-
+import { AuthEntity } from 'src/entities/auth.entity';
 
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AuthService {
     ) { }
 
 
-    async login(loginDto: LoginDto): Promise<{accessToken: string}> {
+    async login(loginDto: LoginDto): Promise<AuthEntity> {
         const user = await this.userService.findOne(loginDto);
         const passwordMatched = await bcrypt.compare(
             loginDto.password,

@@ -40,4 +40,9 @@ export class TransactionsController {
         return await this.transactionsService.findMany()
     }
 
+
+    //* route to create subaccount
+
+
+    //* route to create split payments
 }

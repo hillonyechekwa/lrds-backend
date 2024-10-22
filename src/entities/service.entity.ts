@@ -1,35 +1,42 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Stylist } from "./stylist.entity";
-import { Booking } from "./booking.entity";
+import { StylistEntity } from "./stylist.entity";
+import { BookingEntity } from "./booking.entity";
 import { ServiceCategories } from "src/serv/dto/serv.dto";
+import { ApiProperty } from "@nestjs/swagger";
 
 
-@Entity("service")
-
-
-export class Service {
-    @PrimaryGeneratedColumn({name: "id"})
+export class ServiceEntity {
+    @ApiProperty()
     id: number
 
-    @Column({name: "service_name", unique: true})
+    @ApiProperty()
     name: string
 
-    @Column({name: "service_description", nullable: true})
+    @ApiProperty()
     description: string
 
-    @Column({type: "integer"})
+    @ApiProperty()
     price: number
 
-    @Column('time')
-    duration: Date;
+    @ApiProperty()
+    duration: number
     
-    @Column({name: "sercie_category", default: ServiceCategories.styling})
+    @ApiProperty({enum: ServiceCategories})
     category: ServiceCategories
     
-    @ManyToOne(() => Stylist, (stylist) => stylist.services)
-    stylist: Stylist
+    @ApiProperty()
+    stylist: StylistEntity
 
+    @ApiProperty()
+    stylistId: number
 
-    @ManyToMany(() => Booking, (bookings) => bookings.services)
-    bookings: Booking[]
+    constructor({ stylist, ...data }: Partial<ServiceEntity>) {
+        Object.assign(this, data)
+
+        if (stylist) {
+            this.stylist = new StylistEntity(stylist)
+        }
+    }
+
+    @ApiProperty({isArray: true, type: BookingEntity})
+    bookings: []
 }

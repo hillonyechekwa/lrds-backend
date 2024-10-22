@@ -1,48 +1,62 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, ManyToMany } from "typeorm";
-import { User } from "./user.entity";
-import { Stylist } from "./stylist.entity";
-import { Service } from "./service.entity";
+import { UserEntity } from "./user.entity";
+import { StylistEntity } from "./stylist.entity";
+import { ServiceEntity } from "./service.entity";
 import { BookingStatus, ServiceLocationOptions } from "src/booking/dto/booking.dto";
+import { ApiProperty } from "@nestjs/swagger";
+import { TransactionEntity } from "./transaction.entity";
 
 
 
 
-@Entity("booking")
-
-export class Booking {
-    @PrimaryGeneratedColumn({name: "booking_id"})
+export class BookingEntity {
+    @ApiProperty()
     id: number
 
-    @ManyToOne(() => User, (user) => user.id)
-    user: User
+    @ApiProperty()
+    userId: number
 
-    @ManyToOne(() => Stylist, (stylist) => stylist.id)
-    stylist: Stylist
+    @ApiProperty()
+    user: UserEntity
+
+    @ApiProperty()
+    stylistId: number
+
+    @ApiProperty()
+    stylist: StylistEntity
+
+    constructor({ user, stylist, ...data }: Partial<BookingEntity>) {
+        Object.assign(this, data)
+
+        if (user) {
+            this.user = new UserEntity(user)
+        }
+
+        if (stylist) {
+            this.stylist = new StylistEntity(stylist)
+        }
+    }
     
-    @ManyToMany(() => Service, (service) => service.bookings)
-    services: Service[]
-
-    @Column('date')
-    date: Date
-
-    @Column('time')
+    @ApiProperty({type: ServiceEntity, isArray: true})
+    services: []
+    
+    @ApiProperty()
     startTime: Date
 
-    @Column('time')
+    @ApiProperty()
     endTime: Date
 
-    @Column({name: 'booking_status', default: BookingStatus.pending})
+    @ApiProperty({enum: BookingStatus, default: BookingStatus.pending})
     status: BookingStatus
 
-    @Column({name: "booking_location", default: ServiceLocationOptions.shop})
+    @ApiProperty({enum: ServiceLocationOptions, default: ServiceLocationOptions.shop})
     location: ServiceLocationOptions
 
-    @Column('int')
+    @ApiProperty()
     totalPrice: number
 
-    @Column('time')
+    @ApiProperty()
     createdAt: Date
 
-    @Column('time')
-    updatedAt: Date
+    @ApiProperty({type: TransactionEntity})
+    transaction: TransactionEntity
 }

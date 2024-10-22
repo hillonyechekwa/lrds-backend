@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Service } from 'src/entities/service.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ServDto } from './dto/serv.dto';
 import { Stylist } from 'src/entities/stylist.entity';
+import { UpdateServDto } from './dto/updateServ.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 
 
@@ -24,7 +26,7 @@ export class ServService {
         service.description = createServDto.description
         service.price = createServDto.price
         service.duration = createServDto.duration
-        // service.category = createServDto.category
+        
 
 
         console.log('service-category', createServDto.category)
@@ -54,4 +56,25 @@ export class ServService {
         
         return this.servRepository.save(service)
     }
+
+
+    findOne(id: number): Promise<Service> {
+        return this.servRepository.findOneBy({id})
+    }
+
+    update(id: number, recordToUpdate: UpdateServDto): Promise<UpdateResult> {
+        return this.servRepository.update(id, recordToUpdate)
+    }
+
+    remove(id: number): Promise<DeleteResult>{
+        return this.servRepository.delete(id)
+    }
+
+    async paginate(options: IPaginationOptions): Promise<Pagination<Service>> {
+        const queryBuilder = this.servRepository.createQueryBuilder('s')
+        queryBuilder.orderBy('s.createdAt', 'DESC')
+
+        return paginate<Service>(queryBuilder, options)
+    }
+    
 }
