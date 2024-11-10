@@ -4,8 +4,6 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 // import { TypeOrmModule } from '@nestjs/typeorm';
-import { StylistController } from './stylist/stylist.controller';
-import { StylistModule } from './stylist/stylist.module';
 import { LoggerModule } from './common/middleware/logger/logger.module';
 
 //import config from 'ormconfig';
@@ -32,7 +30,6 @@ import configuration from './config/configuration';
     AuthModule,
     // TypeOrmModule.forRoot(dataSourceOptions),
     // TypeOrmModule.forFeature([User, Stylist, Transaction, Booking]),
-    StylistModule,
     LoggerModule,
     BookingModule,
     ServModule,
@@ -41,7 +38,7 @@ import configuration from './config/configuration';
     PrismaModule,
     ConfigModule.forRoot(configuration)
     ],
-  controllers: [AppController, StylistController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

@@ -1,6 +1,4 @@
 import { Controller, Body, Post, Request, HttpException, HttpStatus, Get, Param, ParseIntPipe, Delete, Put } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
-import { JwtStylistGuard } from 'src/guards/jwt-stylist.guard';
 import { ServDto } from './dto/serv.dto';
 import { UpdateServDto } from './dto/updateServ.dto';
 import { ServService } from './serv.service';
@@ -16,7 +14,6 @@ export class ServController {
 
 
     @Post()
-    @UseGuards(JwtStylistGuard)
     createService
         (
             @Body() createServDto: ServDto,
@@ -65,7 +62,6 @@ export class ServController {
 
     //Update by a stylist alone
     @Put(":id")
-    @UseGuards(JwtStylistGuard)
     update(
         @Param("id", ParseIntPipe) id: number,
         @Body() updateServDto: UpdateServDto
@@ -75,7 +71,6 @@ export class ServController {
 
 
     @Delete(":id")
-    @UseGuards(JwtStylistGuard)
     remove(@Param('id', ParseIntPipe) id: number): Promise<Service> {
         return this.servService.remove(id)
     }

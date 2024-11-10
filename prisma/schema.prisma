@@ -23,7 +23,6 @@ model User{
   email String @unique()
   password String @unique()
   profile Profile?
-  styilst Stylist?
   bookings Booking[] @relation(name: "UserBookings")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -37,23 +36,12 @@ model Profile{
   location String?
 }
 
-model Stylist{
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int @unique
-  rating Int @default(1)
-  services Service[]
-  booked Booking[] @relation(name: "StylistBookings")
-  createdAt DateTime @default(now())
-}
-
 model Service{
   id Int @id @default(autoincrement())
   name String
   price Int
   duration Int
-  stylist Stylist? @relation(fields: [stylistId], references: [id])
-  stylistId Int?
+  // add service relation later
   bookings Booking[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
@@ -63,8 +51,7 @@ model Booking{
   id Int @id @default(autoincrement())
   user User @relation(name: "UserBookings", fields: [userId], references: [id])
   userId Int @unique
-  stylist Stylist @relation(name: "StylistBookings", fields: [stylistId], references: [id])
-  stylistId Int @unique
+//add stylist relation to user later
   services Service[]
   startTime DateTime
   endTime DateTime
