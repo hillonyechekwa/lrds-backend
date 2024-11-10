@@ -10,6 +10,7 @@ import refreshJwtConfig from 'src/config/refresh-jwt.config';
 import { ConfigType } from '@nestjs/config';
 import * as argon2 from 'argon2'
 import { CurrentUser } from 'src/types/currentuser.type';
+import { CreateUserDto } from 'src/user/dto/user.dto';
 
 
 @Injectable()
@@ -68,8 +69,31 @@ export class AuthService {
         return currentUser
     }
 
+    async validateGoogleUser(GoogleUser: CreateUserDto) {
+        const user = this.userService.findByEmail(GoogleUser.email)
+        if (user) return user
+        return await this.userService.createUser(GoogleUser)
+    }
+
     async login(loginDto: LoginDto): Promise<AuthEntity> {
         const user = await this.userService.findOne(loginDto);
+
+        if (!user) throw new UnauthorizedException("User not found!!!")
+        
+        
+        //for google login
+        if (!loginDto.password) {
+            const { accessToken, refreshToken } = await this.generateTokens(user.id)
+            const hashedRefreshToken = await argon2.hash(refreshToken)
+            await this.userService.updateHashedRefreshToken(user.id, hashedRefreshToken)
+            return {
+                accessToken,
+                refreshToken
+            }
+        }
+
+
+        //for non-google login
         const passwordMatched = await bcrypt.compare(
             loginDto.password,
             user.password

@@ -13,6 +13,8 @@ import jwtConfig from 'src/config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
 import refreshJwtConfig from 'src/config/refresh-jwt.config';
 import { RefreshJwtStrategy } from './strategies/refresh.strategy';
+import { GoogleAuthStrategy } from './strategies/google.strategy';
+import googleConfig from 'src/config/google.config';
 
 
 @Module({
@@ -27,10 +29,11 @@ import { RefreshJwtStrategy } from './strategies/refresh.strategy';
     // }),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
+    ConfigModule.forFeature(googleConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     PassportModule
   ],
-  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, UserService, LocalStrategy],
+  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, GoogleAuthStrategy, UserService, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService]
 })
