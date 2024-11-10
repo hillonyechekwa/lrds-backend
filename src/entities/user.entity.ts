@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { BookingEntity } from "./booking.entity";
+import { Role } from "src/enums/role.enum";
 
 
 export class UserEntity {
@@ -25,6 +26,9 @@ export class UserEntity {
 
     @Exclude()
     password: string;
+
+    @ApiProperty({type: 'enum', default: Role.USER})
+    role: Role
 
     @ApiProperty({nullable: true}) //*TODO: SHOULD PROBABLY BE EXCLUDED TOO, NOT SURE YET.
     hashedRefreshToken: string;

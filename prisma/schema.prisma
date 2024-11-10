@@ -22,6 +22,7 @@ model User{
   username String @unique()
   email String @unique()
   password String @unique()
+  role Role @default(USER)
   hashedRefreshToken String? @unique()
   profile Profile?
   bookings Booking[] @relation(name: "UserBookings")
@@ -91,4 +92,9 @@ enum BookingStatus{
 enum ServiceLocation{
   HOME
   SHOP
+}
+
+enum Role{
+  USER
+  STYLIST
 }

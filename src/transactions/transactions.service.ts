@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Inject } from '@nestjs/common';
+// import { ConfigService } from '@nestjs/config';
 import { InitilaizeTransactionDto } from './dto/initialize-transaction.dto';
 import { PaystackCallbackDto } from './dto/paystackcallback.dto';
 import { PaymentStatus, PaystackWebhookDto } from './dto/paystackwebhook.dto';
@@ -9,13 +9,16 @@ import axios, { AxiosResponse } from 'axios';
 import { PAYSTACK_SUCCESS_STATUS, PAYSTACK_TRANSACTION_INIT_URL, PAYSTACK_TRANSACTION_VERIFY_BASE_URL, PAYSTACK_WEBHOOOK_CRYPTO_ALGO } from './transactions.constants';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import paystackConfig from 'src/config/paystack.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class TransactionsService {
     constructor(
         private prisma: PrismaService,
 
-        readonly configService: ConfigService
+        // readonly configService: ConfigService
+        @Inject(paystackConfig.KEY) private paystackConfiguration: ConfigType<typeof paystackConfig>
     ){}
 
 
@@ -50,7 +53,7 @@ export class TransactionsService {
             metadata
         }
 
-        const paystackCallbackUrl = this.configService.get(`PAYSTACK_CALLBACK_URL`)
+        const paystackCallbackUrl = this.paystackConfiguration.callbackURL
         if (paystackCallbackUrl) {
             paystackCreateTransactionDto.callback_url = paystackCallbackUrl
         }
@@ -66,9 +69,7 @@ export class TransactionsService {
                 payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${this.configService.get < string >(
-                            'PAYSTACK_SECRET_KEY'
-                        )}`,
+                        Authorization: `Bearer ${this.paystackConfiguration.secret}`,
                         'Content-Type': 'application/json'
                     }
                 }
@@ -113,9 +114,7 @@ export class TransactionsService {
         try {
             response = await axios.get<PaystackVerifyTransactionResponseDto>(url, {
                 headers: {
-                    Authorization: `Bearere ${this.configService.get<string>(
-                        'PAYSTACK_SECRET_KEY'
-                    )}`
+                    Authorization: `Bearer ${this.paystackConfiguration.secret}`
                 }
             })
         } catch (error) {
@@ -156,7 +155,7 @@ export class TransactionsService {
         try {
             const hash = createHmac(
                 PAYSTACK_WEBHOOOK_CRYPTO_ALGO,
-                this.configService.get<string>('PAYSTACK_SECRET_KEY')
+                this.paystackConfiguration.secret
             )
             .update(JSON.stringify(webHookDto))
             .digest('hex')

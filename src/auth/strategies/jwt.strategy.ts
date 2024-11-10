@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { PayloadType } from "src/types/payload.type";
 import jwtConfig from "src/config/jwt.config";
 import { ConfigType } from "@nestjs/config";
+import { AuthService } from "../auth.service";
 
 
 
@@ -15,7 +16,8 @@ import { ConfigType } from "@nestjs/config";
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         @Inject(jwtConfig.KEY)
-        private jwtConfiguration: ConfigType<typeof jwtConfig>
+        private jwtConfiguration: ConfigType<typeof jwtConfig>,
+        private authService: AuthService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -26,9 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 
     async validate(payload: PayloadType) {
-        return {
-            userId: payload.userId,
-            email: payload.email
-        }
+        const userId = payload.userId
+        return this.authService.validateJwtUser(userId)
     }
 }

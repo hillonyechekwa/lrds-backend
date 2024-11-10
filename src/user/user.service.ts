@@ -59,4 +59,14 @@ export class UserService {
         delete user.password
         return user;
     }
+
+
+
+    async remove(userId: number) {
+        await this.prisma.user.delete({
+            where: {
+                id: userId
+            }
+        })
+    }
 }

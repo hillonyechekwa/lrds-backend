@@ -9,6 +9,7 @@ import { AuthEntity } from 'src/entities/auth.entity';
 import refreshJwtConfig from 'src/config/refresh-jwt.config';
 import { ConfigType } from '@nestjs/config';
 import * as argon2 from 'argon2'
+import { CurrentUser } from 'src/types/currentuser.type';
 
 
 @Injectable()
@@ -52,6 +53,19 @@ export class AuthService {
         return {
             userId
         }
+    }
+
+
+    async validateJwtUser(userId: number) {
+        const user = await this.userService.findById(userId)
+        if (!user) {
+            throw new UnauthorizedException("User not found!!")
+        }
+        const currentUser: CurrentUser = {
+            userId: user.id,
+            role: user.role
+        }
+        return currentUser
     }
 
     async login(loginDto: LoginDto): Promise<AuthEntity> {
