@@ -1,20 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Stylist } from 'src/entities/stylist.entity';
-import { Repository } from 'typeorm';
+
+import { PrismaService } from 'src/prisma/prisma.service';
+import {Stylist, User} from "@prisma/client"
 
 
 @Injectable()
 export class StylistService {
     constructor(
-        @InjectRepository(Stylist)
-        private stylistRepository: Repository<Stylist>,
+        private prisma: PrismaService
         // private serviceRepository: Repository<Service>
     ) { }
     
 
     async findStylistById(userId: number): Promise<Stylist> {
-        const stylist = await this.stylistRepository.findOneBy({user: {id: userId}})
+        const stylist = await this.prisma.stylist.findUnique({where: {userId: userId}})
         if (!stylist) {
             throw new UnauthorizedException()
         }
@@ -22,8 +21,8 @@ export class StylistService {
         return stylist
     }
     //for general search
-    async findStylistByUsername(username: string): Promise<Stylist>{
-        return this.stylistRepository.findOneBy({user: {username: username}})
+    async findStylistByUsername(username: string): Promise<Stylist | User>{
+        return this.prisma.user.findUnique({ where: { username: username }  })
     }
 
     // async findStylitsByEmail(email: string): Promise<Stylist>{

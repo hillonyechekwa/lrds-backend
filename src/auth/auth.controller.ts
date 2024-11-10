@@ -1,9 +1,10 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { User } from 'src/entities/user.entity';
+import { User } from '@prisma/client';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { LocalGuard } from 'src/guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +15,9 @@ export class AuthController {
         return this.userService.createUser(userDto)
     }
 
+
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(LocalGuard)
     @Post('login')
     login(@Body() loginDto: LoginDto){
         return this.authService.login(loginDto);

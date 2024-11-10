@@ -1,4 +1,4 @@
-import { JWTStrategy } from './jwt.strategy';
+import { JWTStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule} from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
@@ -7,12 +7,16 @@ import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
 import { StylistModule } from 'src/stylist/stylist.module';
 import { authConstants } from "./auth.constants";
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { UserService } from 'src/user/user.service';
+import { LocalStrategy } from './strategies/local.strategy';
 
 
 @Module({
   imports: [
     UserModule,
     StylistModule,
+    PrismaModule,
     JwtModule.register({
       secret: authConstants.secret,
       signOptions: {
@@ -21,7 +25,7 @@ import { authConstants } from "./auth.constants";
     }),
     PassportModule
   ],
-  providers: [AuthService, JWTStrategy],
+  providers: [AuthService, JWTStrategy, UserService, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService]
 })

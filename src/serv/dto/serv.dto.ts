@@ -1,42 +1,41 @@
-import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum, IsDateString } from "class-validator";
+import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum} from "class-validator";
+import { ServiceCategories } from "src/enums/service-categories.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
 
 
-export enum ServiceCategories {
-    styling = 'styling',
-    cut = 'cut',
-    treatement = 'treatment'
-}
+
 
 export class ServDto{
     @IsString()
     @IsNotEmpty()
+    @ApiProperty()
     name: string
 
     @IsString()
     @IsNotEmpty()
+    @ApiProperty()
     description: string
 
     @IsNumber()
     @IsNotEmpty()
+    @ApiProperty()
     price: number
     
     @IsMilitaryTime()
     @IsNotEmpty()
+    @ApiProperty()
     readonly duration: number
 
     @IsEnum(ServiceCategories)
     @IsNotEmpty()
+    @ApiProperty()
     category: ServiceCategories;
 
     @IsNotEmpty()
     @IsNumber()
-    readonly stylist: number
-
-    @IsNotEmpty()
-    @IsDateString()
-    readonly createdAt: Date
+    @ApiProperty()
+    readonly stylistId: number
 
 }
 

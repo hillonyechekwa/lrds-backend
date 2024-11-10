@@ -3,27 +3,17 @@ import { ConfigService } from '@nestjs/config';
 import { InitilaizeTransactionDto } from './dto/initialize-transaction.dto';
 import { PaystackCallbackDto } from './dto/paystackcallback.dto';
 import { PaymentStatus, PaystackWebhookDto } from './dto/paystackwebhook.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Transaction } from 'src/entities/transaction.entity';
-import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import { Booking } from 'src/entities/booking.entity';
+import { Transaction } from '@prisma/client';
 import { PaystackCreateTransactionDto, PaystackCreateTransactionResponseDto, PaystackMetadata, PaystackVerifyTransactionResponseDto } from './dto/paystack.dto';
 import axios, { AxiosResponse } from 'axios';
 import { PAYSTACK_SUCCESS_STATUS, PAYSTACK_TRANSACTION_INIT_URL, PAYSTACK_TRANSACTION_VERIFY_BASE_URL, PAYSTACK_WEBHOOOK_CRYPTO_ALGO } from './transactions.constants';
 import { createHmac, timingSafeEqual } from 'crypto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TransactionsService {
     constructor(
-        @InjectRepository(Transaction)
-        private transactionRepo: Repository<Transaction>,
-
-        @InjectRepository(Booking)
-        private bookingRepo: Repository<Booking>,
-
-        @InjectRepository(User)
-        private userRepo: Repository<User>,
+        private prisma: PrismaService,
 
         readonly configService: ConfigService
     ){}
@@ -32,9 +22,9 @@ export class TransactionsService {
     async initializeTransaction(initTransactionDto: InitilaizeTransactionDto): Promise<Transaction | null> {
         const { bookingId } = initTransactionDto
         
-        const booking = await this.bookingRepo.findOneBy({ id: bookingId })
+        const booking = await this.prisma.booking.findUnique({ where: { id: bookingId } })
         
-        const user = await this.userRepo.findOneBy({ id: booking.user.id })
+        const user = await this.prisma.user.findUnique({ where: { id: booking.userId } })
         
         const metadata: PaystackMetadata = {
             user_id: user.id,
@@ -93,14 +83,15 @@ export class TransactionsService {
         const data = result.data
 
         if (result.status === true) {
-            const transaction = this.transactionRepo.create({
+            const transaction = {
                 transactionReference: data.reference,
                 paymentLink: data.authorization_url,
+                transactionStatus: "",
                 bookingId:booking.id
-            })
+            }
 
 
-            return await this.transactionRepo.save(transaction)
+            return await this.prisma.transaction.create({ data: transaction })
         }
 
         return null
@@ -108,7 +99,7 @@ export class TransactionsService {
 
 
     async verifyTransaction(callbackDto: PaystackCallbackDto): Promise<Transaction | null> {
-        const transaction = await this.transactionRepo.findOneBy({transactionReference: callbackDto.reference})
+        const transaction = await this.prisma.transaction.findFirst({ where: { transactionReference: callbackDto.reference }  })
 
         if (!transaction) {
             return null
@@ -141,9 +132,9 @@ export class TransactionsService {
         const paymentcConfirmed = transactionStatus === PAYSTACK_SUCCESS_STATUS
 
         if (paymentcConfirmed) {
-            transaction.status = PaymentStatus.paid
+            transaction.status = PaymentStatus.PAID
         } else {
-            transaction.status = PaymentStatus.notPaid
+            transaction.status = PaymentStatus.NOTPAID
         }
     }
 
@@ -180,28 +171,28 @@ export class TransactionsService {
         }
 
 
-        const transaction = await this.transactionRepo.findOneBy({transactionReference: webHookDto.data.reference})
+        const transaction = await this.prisma.transaction.findFirst({ where: { transactionReference: webHookDto.data.reference }  })
 
         const transactionStatus = webHookDto.data.status
         const paymentcConfirmed = transactionStatus === PAYSTACK_SUCCESS_STATUS
 
 
         if (paymentcConfirmed) {
-            transaction.status = PaymentStatus.paid
+            transaction.status = PaymentStatus.PAID
         } else {
-            transaction.status = PaymentStatus.notPaid
+            transaction.status = PaymentStatus.NOTPAID
         }
 
         transaction.transactionStatus = transactionStatus
 
 
-        await this.transactionRepo.save(transaction)
+        await this.prisma.transaction.create({ data: transaction })
 
         return true
     }
 
     async findMany() {
-        return this.transactionRepo.find()
+        return this.prisma.transaction.findMany()
     }
 }
  

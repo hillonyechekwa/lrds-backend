@@ -1,25 +1,32 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
+import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
+        private prisma: PrismaService
     ) { }
 
 
+    async findByEmail(email: string): Promise<User>{
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email
+            }
+        })
+        return user
+    }
+
     async getAllUsers(): Promise<User[]> {
-        const users = await this.userRepository.find()
+        const users = await this.prisma.user.findMany()
         return users
     }
     //userd for auth login
     async findOne(data: Partial<User>): Promise<User> {
-        const user = await this.userRepository.findOneBy({email: data.email})
+        const user = await this.prisma.user.findUnique({ where: { email: data.email } })
         if (!user) {
             throw new UnauthorizedException('Could not find user')
         }
@@ -28,7 +35,7 @@ export class UserService {
     }
 
     async findById(id: number): Promise<User>{
-        const user = await this.userRepository.findOneBy({id: id})
+        const user = await this.prisma.user.findUnique({ where: { id: id } })
         return user
     }
 
@@ -36,7 +43,7 @@ export class UserService {
         const salt = await bcrypt.genSalt();
         //app password validation 
         userDto.password = await bcrypt.hash(userDto.password, salt);
-        const user = await this.userRepository.save(userDto)
+        const user = await this.prisma.user.create({ data: userDto })
         delete user.password
         return user;
     }

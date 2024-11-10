@@ -1,7 +1,8 @@
 import { UserEntity } from "./user.entity";
 import { StylistEntity } from "./stylist.entity";
 import { ServiceEntity } from "./service.entity";
-import { BookingStatus, ServiceLocationOptions } from "src/booking/dto/booking.dto";
+// import { BookingStatus, ServiceLocationOptions } from "src/booking/dto/booking.dto";
+import { BookingStatus, ServiceLocation } from "@prisma/client";
 import { ApiProperty } from "@nestjs/swagger";
 import { TransactionEntity } from "./transaction.entity";
 
@@ -45,11 +46,11 @@ export class BookingEntity {
     @ApiProperty()
     endTime: Date
 
-    @ApiProperty({enum: BookingStatus, default: BookingStatus.pending})
+    @ApiProperty({enum: BookingStatus, default: BookingStatus.PENDING})
     status: BookingStatus
 
-    @ApiProperty({enum: ServiceLocationOptions, default: ServiceLocationOptions.shop})
-    location: ServiceLocationOptions
+    @ApiProperty({enum: ServiceLocation, default: ServiceLocation.SHOP})
+    location: ServiceLocation
 
     @ApiProperty()
     totalPrice: number

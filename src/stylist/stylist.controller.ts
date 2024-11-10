@@ -1,6 +1,5 @@
-import { Controller, Get, Put, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { StylistService } from './stylist.service';
-import { ServDto } from '../serv/dto/serv.dto';
 
 @Controller('stylist')
 export class StylistController {

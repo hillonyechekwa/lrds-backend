@@ -1,6 +1,6 @@
 import { StylistEntity } from "./stylist.entity";
 import { BookingEntity } from "./booking.entity";
-import { ServiceCategories } from "src/serv/dto/serv.dto";
+import { ServiceCategories } from "src/enums/service-categories.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
 

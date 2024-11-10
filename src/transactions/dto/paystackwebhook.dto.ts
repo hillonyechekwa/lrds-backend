@@ -32,6 +32,6 @@ export type Data = {
 
 
 export enum PaymentStatus {
-    paid = "paid",
-    notPaid = "not paid"
+    PAID = "PAID",
+    NOTPAID = "NOTPAID"
 }

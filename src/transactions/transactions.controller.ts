@@ -3,7 +3,8 @@ import { TransactionsService } from './transactions.service';
 import { InitilaizeTransactionDto } from './dto/initialize-transaction.dto';
 import { PaystackWebhookDto } from './dto/paystackwebhook.dto';
 import { PaystackCallbackDto } from './dto/paystackcallback.dto';
-import { Transaction } from 'src/entities/transaction.entity';
+// import { TransactionEntity } from 'src/entities/transaction.entity';
+import { Transaction } from '@prisma/client';
 import { PAYSTACK_WEBHOOK_SIGNATURE_KEY } from './transactions.constants';
 
 @Controller('transactions')

@@ -18,6 +18,22 @@ export class AuthService {
     ) { }
 
 
+    async validateUser(loginDto: LoginDto) {
+        const { email, password } = loginDto
+        const user = await this.userService.findByEmail(email)
+        if (!user) {
+            throw new UnauthorizedException("user not found!")
+        }
+
+        const isPasswordMatched = await bcrypt.compare(password, user.password)
+
+        if (!isPasswordMatched) {
+            throw new UnauthorizedException("invalid credentials")
+        }
+
+        return {id: user.id}
+    }
+
     async login(loginDto: LoginDto): Promise<AuthEntity> {
         const user = await this.userService.findOne(loginDto);
         const passwordMatched = await bcrypt.compare(
@@ -40,7 +56,7 @@ export class AuthService {
                 accessToken: this.jwtService.sign(payload)
             }
         } else {
-            throw new UnauthorizedException("password doese not match")
+            throw new UnauthorizedException("Invalid credentials")
         }
     }
 }
