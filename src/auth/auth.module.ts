@@ -11,6 +11,8 @@ import { UserService } from 'src/user/user.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import jwtConfig from 'src/config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
+import refreshJwtConfig from 'src/config/refresh-jwt.config';
+import { RefreshJwtStrategy } from './strategies/refresh.strategy';
 
 
 @Module({
@@ -24,10 +26,11 @@ import { ConfigModule } from '@nestjs/config';
     //   }
     // }),
     ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(refreshJwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     PassportModule
   ],
-  providers: [AuthService, JwtStrategy, UserService, LocalStrategy],
+  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, UserService, LocalStrategy],
   controllers: [AuthController],
   exports: [AuthService]
 })

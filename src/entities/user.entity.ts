@@ -1,6 +1,5 @@
 import { Exclude } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
-import { StylistEntity } from "./stylist.entity";
 import { BookingEntity } from "./booking.entity";
 
 
@@ -27,11 +26,11 @@ export class UserEntity {
     @Exclude()
     password: string;
 
+    @ApiProperty({nullable: true}) //*TODO: SHOULD PROBABLY BE EXCLUDED TOO, NOT SURE YET.
+    hashedRefreshToken: string;
+
     @ApiProperty({required: false})
     profile?: string
-
-    @ApiProperty({required: false, type: StylistEntity})
-    stylist?: StylistEntity
 
     @ApiProperty({isArray: true, type: BookingEntity})
     bookings: []

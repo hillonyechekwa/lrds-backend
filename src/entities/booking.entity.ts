@@ -1,5 +1,4 @@
 import { UserEntity } from "./user.entity";
-import { StylistEntity } from "./stylist.entity";
 import { ServiceEntity } from "./service.entity";
 // import { BookingStatus, ServiceLocationOptions } from "src/booking/dto/booking.dto";
 import { BookingStatus, ServiceLocation } from "@prisma/client";
@@ -19,23 +18,23 @@ export class BookingEntity {
     @ApiProperty()
     user: UserEntity
 
-    @ApiProperty()
-    stylistId: number
+    // @ApiProperty()
+    // stylistId: number
 
-    @ApiProperty()
-    stylist: StylistEntity
+    // @ApiProperty()
+    // stylist: StylistEntity
 
-    constructor({ user, stylist, ...data }: Partial<BookingEntity>) {
-        Object.assign(this, data)
+    // constructor({ user, stylist, ...data }: Partial<BookingEntity>) {
+    //     Object.assign(this, data)
 
-        if (user) {
-            this.user = new UserEntity(user)
-        }
+    //     if (user) {
+    //         this.user = new UserEntity(user)
+    //     }
 
-        if (stylist) {
-            this.stylist = new StylistEntity(stylist)
-        }
-    }
+    //     if (stylist) {
+    //         this.stylist = new StylistEntity(stylist)
+    //     }
+    // }
     
     @ApiProperty({type: ServiceEntity, isArray: true})
     services: []

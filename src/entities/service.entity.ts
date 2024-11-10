@@ -1,4 +1,3 @@
-import { StylistEntity } from "./stylist.entity";
 import { BookingEntity } from "./booking.entity";
 import { ServiceCategories } from "src/enums/service-categories.enum";
 import { ApiProperty } from "@nestjs/swagger";
@@ -23,19 +22,19 @@ export class ServiceEntity {
     @ApiProperty({enum: ServiceCategories})
     category: ServiceCategories
     
-    @ApiProperty()
-    stylist: StylistEntity
+    // @ApiProperty()
+    // stylist: StylistEntity
 
-    @ApiProperty()
-    stylistId: number
+    // @ApiProperty()
+    // stylistId: number
 
-    constructor({ stylist, ...data }: Partial<ServiceEntity>) {
-        Object.assign(this, data)
+    // constructor({ stylist, ...data }: Partial<ServiceEntity>) {
+    //     Object.assign(this, data)
 
-        if (stylist) {
-            this.stylist = new StylistEntity(stylist)
-        }
-    }
+    //     if (stylist) {
+    //         this.stylist = new StylistEntity(stylist)
+    //     }
+    // }
 
     @ApiProperty({isArray: true, type: BookingEntity})
     bookings: []
