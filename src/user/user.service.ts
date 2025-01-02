@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
@@ -24,9 +24,11 @@ export class UserService {
 
 
     async findByEmail(email: string): Promise<User>{
+
+        console.log("email", email)
         const user = await this.prisma.user.findUnique({
             where: {
-                email
+                email: email
             }
         })
         return user
@@ -52,12 +54,24 @@ export class UserService {
     }
 
     async createUser(userDto: CreateUserDto): Promise<User>{
-        const salt = await bcrypt.genSalt();
-        //app password validation 
-        userDto.password = await bcrypt.hash(userDto.password, salt);
-        const user = await this.prisma.user.create({ data: userDto })
-        delete user.password
-        return user;
+
+        const isUser = await this.findByEmail(userDto.email)
+
+        if (isUser !== null) {
+            throw new ConflictException("This user already exists!!")
+        }
+        try {
+            
+            const salt = await bcrypt.genSalt();
+            //app password validation 
+            userDto.password = await bcrypt.hash(userDto.password, salt);
+            console.log(userDto)
+            const user = await this.prisma.user.create({ data: userDto })
+            delete user.password
+            return user;
+        } catch (error) {
+            throw new BadRequestException("User could not be created", error)
+        }
     }
 
 

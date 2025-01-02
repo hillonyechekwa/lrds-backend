@@ -11,7 +11,7 @@ export type Data = {
     domain?: string;
     status?: string;
     reference?: string;
-    amounnt?: number
+    amounnt?: string;
 
     gateway_respone?: string
     paid_at?: string

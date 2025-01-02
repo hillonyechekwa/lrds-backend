@@ -1,6 +1,5 @@
 import { Controller, Body, Post, UseGuards, HttpCode, HttpStatus, Req, Get, Res } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -12,16 +11,17 @@ import { GoogleAuthGuard } from 'src/guards/google.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly userService:UserService, private readonly authService:AuthService){}
+    constructor(private readonly authService:AuthService){}
 
+    @HttpCode(HttpStatus.OK)
     @Post("signup")
-    signUp(@Body() userDto: CreateUserDto) : Promise<User>{
-        return this.userService.createUser(userDto)
+    signUp(@Body() userDto: CreateUserDto){
+        return this.authService.signUp(userDto)
     }
 
 
-    @HttpCode(HttpStatus.OK)
     @UseGuards(LocalGuard)
+    @HttpCode(HttpStatus.OK)
     @Post('login')
     login(@Body() loginDto: LoginDto){
         return this.authService.login(loginDto);
@@ -30,15 +30,16 @@ export class AuthController {
     @UseGuards(RefreshAuthGuard)
     @Post("refresh")
     refreshToken(@Req() req) {
-        return this.authService.refreshToken(req.user.id)
+        const userId = req.user['userId']
+        return this.authService.refreshToken(userId)
     }
 
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post("signout")
     signOut(@Req() req) {
-        return this.authService.signOut(req.user.userId)
-        // this.authService.signOut(req.user.id)
+        const userId = req.user['userId']
+        return this.authService.signOut(userId)
     }
 
 
@@ -62,7 +63,7 @@ export class AuthController {
         const response = await this.authService.login(loginDto)
 
         // res.redirect(`http://localhost:5173?token=${response.accessToken}`)
-        res.redirect(`http://localhost:5173?token=${response.refreshToken}`)
+        res.redirect(`http://localhost:5173?token=${response.backendTokens.refreshToken}`)
      }
     
 

@@ -1,7 +1,7 @@
 
 
 export type PaystackCreateTransactionDto = {
-    amount: number
+    amount: string
     email: string
     callback_url?: string
     metadata: PaystackMetadata

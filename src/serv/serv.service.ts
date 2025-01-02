@@ -13,8 +13,10 @@ export class ServService {
         private prisma: PrismaService
     ) { }
     
-
+    
     async createService(createServDto: ServDto): Promise<Service> {
+
+        
         
         
         return this.prisma.service.create({ data: createServDto  })

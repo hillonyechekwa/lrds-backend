@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum} from "class-validator";
+import { IsString, IsNotEmpty, IsEnum} from "class-validator";
 import { ServiceCategories } from "src/enums/service-categories.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -17,12 +17,11 @@ export class ServDto{
     @ApiProperty()
     description: string
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    price: number
+    price: string
     
-    @IsMilitaryTime()
     @IsNotEmpty()
     @ApiProperty()
     readonly duration: number
@@ -32,11 +31,8 @@ export class ServDto{
     @ApiProperty()
     category: ServiceCategories;
 
-    @IsNotEmpty()
-    @IsNumber()
     @ApiProperty()
-    readonly stylistId: number
-
+    stylistId?: number
 }
 
 

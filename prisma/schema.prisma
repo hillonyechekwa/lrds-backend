@@ -26,6 +26,7 @@ model User{
   hashedRefreshToken String? @unique()
   profile Profile?
   bookings Booking[] @relation(name: "UserBookings")
+  services Service[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -41,9 +42,13 @@ model Profile{
 model Service{
   id Int @id @default(autoincrement())
   name String
-  price Int
-  duration Int
+  description String
+  price String
+  duration Int //make duration a string later on
   // add service relation later
+  category ServiceCategory @default(STYLING)
+  stylist User? @relation(fields: [stylistId], references: [id])
+  stylistId Int?
   bookings Booking[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
@@ -51,16 +56,16 @@ model Service{
 
 model Booking{
   id Int @id @default(autoincrement())
-  user User @relation(name: "UserBookings", fields: [userId], references: [id])
-  userId Int @unique
+  user User? @relation(name: "UserBookings", fields: [userId], references: [id])
+  userId Int?
 //add stylist relation to user later
   services Service[]
-  startTime DateTime
-  endTime DateTime
+  startTime Int
+  endTime Int
   status BookingStatus @default(PENDING)
   location ServiceLocation @default(SHOP)
-  totalPrice Int
-  transaction Transaction?
+  totalPrice String?
+  transaction Transaction[]
   createdAt DateTime @default(now())
 }
 
@@ -72,7 +77,7 @@ model Transaction{
   transactionStatus String
   status PaymentStatus @default(NOTPAID)
   booking Booking @relation(fields: [bookingId], references: [id])
-  bookingId Int @unique
+  bookingId Int
   createdAt DateTime @default(now())
 }
 
@@ -88,6 +93,11 @@ enum BookingStatus{
   REJECTED
 }
 
+enum ServiceCategory{
+  STYLING
+  CUT
+  TREATMENT
+}
 
 enum ServiceLocation{
   HOME

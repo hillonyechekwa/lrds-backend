@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
 // import { User } from 'src/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/login.dto'
@@ -23,8 +23,7 @@ export class AuthService {
     ) { }
 
     //for the local Strategy
-    async validateUser(loginDto: LoginDto) {
-        const { email, password } = loginDto
+    async validateUser(email: string, password: string) {
         const user = await this.userService.findByEmail(email)
         if (!user) {
             throw new UnauthorizedException("user not found!")
@@ -39,10 +38,12 @@ export class AuthService {
         return {id: user.id}
     }
     //used in refresh strategy
-    async validateRefreshToken(userId: number, refreshToken: string) {
+    async validateRefreshToken(userId: number, refreshToken: string): Promise<CurrentUser> {
         //refreshToken is not in hashed form here.
         const user = await this.userService.findById(userId)
-        if (!user || user.hashedRefreshToken) {
+        console.log(user)
+
+        if (!user || !user.hashedRefreshToken) {
             throw new UnauthorizedException("Invalid Refresh Token!")
         }
 
@@ -52,21 +53,22 @@ export class AuthService {
         }
 
         return {
-            userId
+            userId: user.id,
+            role: user.role
         }
     }
 
 
-    async validateJwtUser(userId: number) {
+    async validateJwtUser(userId: number): Promise<CurrentUser> {
         const user = await this.userService.findById(userId)
         if (!user) {
             throw new UnauthorizedException("User not found!!")
         }
-        const currentUser: CurrentUser = {
+        
+        return {
             userId: user.id,
             role: user.role
         }
-        return currentUser
     }
 
     async validateGoogleUser(GoogleUser: CreateUserDto) {
@@ -75,10 +77,29 @@ export class AuthService {
         return await this.userService.createUser(GoogleUser)
     }
 
+    async signUp(userDto: CreateUserDto): Promise<AuthEntity>{
+        const user = await this.userService.createUser(userDto)
+
+        const { accessToken, refreshToken } = await this.generateTokens(user.id)
+        const hashedRefreshToken = await argon2.hash(refreshToken)
+        await this.userService.updateHashedRefreshToken(user.id, hashedRefreshToken)
+        return {
+            user: {
+                userId: user.id,
+                username: user.username,
+                role: user.role
+            },
+            backendTokens: {
+                accessToken,
+                refreshToken
+            }
+        }
+    } 
+
     async login(loginDto: LoginDto): Promise<AuthEntity> {
         const user = await this.userService.findOne(loginDto);
 
-        if (!user) throw new UnauthorizedException("User not found!!!")
+        if (!user) throw new NotFoundException("User not found!!!")
         
         
         //for google login
@@ -87,8 +108,15 @@ export class AuthService {
             const hashedRefreshToken = await argon2.hash(refreshToken)
             await this.userService.updateHashedRefreshToken(user.id, hashedRefreshToken)
             return {
-                accessToken,
-                refreshToken
+                user: {
+                    userId: user.id,
+                    username: user.username,
+                    role: user.role
+                },
+                backendTokens: {
+                    accessToken,
+                    refreshToken
+                }
             }
         }
 
@@ -112,10 +140,18 @@ export class AuthService {
 
             const { accessToken, refreshToken } = await this.generateTokens(user.id)
             const hashedRefreshToken = await argon2.hash(refreshToken)
+            console.log(hashedRefreshToken)
             await this.userService.updateHashedRefreshToken(user.id, hashedRefreshToken)
             return {
-                accessToken,
-                refreshToken
+                user: {
+                    userId: user.id,
+                    username: user.username,
+                    role: user.role
+                },
+                backendTokens: {
+                    accessToken,
+                    refreshToken
+                }
             }
         } else {
             throw new UnauthorizedException("Invalid credentials")

@@ -1,4 +1,4 @@
-import {IsNumber, IsMilitaryTime, IsNotEmpty, IsEnum, IsArray } from "class-validator";
+import { IsNotEmpty, IsEnum, IsArray } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 // import { Prisma } from "@prisma/client";
 
@@ -12,44 +12,31 @@ import { ServiceLocation } from "src/enums/location.enum";
 
 
 export class BookingDto{
-    @IsNumber()
-    @IsNotEmpty()
     @ApiProperty()
-    readonly userId: number;
-
-    @IsNumber()
-    @IsNotEmpty()
-    @ApiProperty()
-    readonly stylistId: number;
+    userId?: number;
 
     @IsArray()
-    @IsNumber()
     @IsNotEmpty()
     @ApiProperty()
     readonly services: number[];
 
-    @IsMilitaryTime()
     @IsNotEmpty()
     @ApiProperty()
-    startTime: Date;
+    startTime: number; //TODO: remember to fix start time to be string later
 
-    @IsMilitaryTime()
     @IsNotEmpty()
     @ApiProperty()
-    endTime: Date;
+    endTime: number;
 
     @IsEnum(BookingStatus)
-    @IsNotEmpty()
-    @ApiProperty({enum: BookingStatus})
+    @ApiProperty({enum: BookingStatus, default: BookingStatus.PENDING})
     status: BookingStatus;
 
     @IsEnum(ServiceLocation) 
-    @IsNotEmpty()
-    @ApiProperty({enum: ServiceLocation})
+    @ApiProperty({enum: ServiceLocation, default: ServiceLocation.SHOP})
     location: ServiceLocation
 
-    @IsNumber()
-    @IsNotEmpty()
+    
     @ApiProperty()
-    totalPrice: number
+    totalPrice?: string
 }

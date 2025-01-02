@@ -7,6 +7,7 @@ import { PayloadType } from "src/types/payload.type";
 import jwtConfig from "src/config/jwt.config";
 import { ConfigType } from "@nestjs/config";
 import { AuthService } from "../auth.service";
+import { CurrentUser } from "src/types/currentuser.type";
 
 
 
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
 
-    async validate(payload: PayloadType) {
+    async validate(payload: PayloadType): Promise<CurrentUser> {
         const userId = payload.userId
         return this.authService.validateJwtUser(userId)
     }

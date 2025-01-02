@@ -119,6 +119,8 @@ export class TransactionsService {
             })
         } catch (error) {
             //handle error
+            console.log("transaction verification failed", error.message)
+            throw new Error(error.message)
         }
 
         if (!response) {
@@ -128,13 +130,21 @@ export class TransactionsService {
         const result = response.data
 
         const transactionStatus = result?.data?.status
-        const paymentcConfirmed = transactionStatus === PAYSTACK_SUCCESS_STATUS
+        const paymentConfirmed = transactionStatus === PAYSTACK_SUCCESS_STATUS
 
-        if (paymentcConfirmed) {
-            transaction.status = PaymentStatus.PAID
+        if (paymentConfirmed) {
+            await this.prisma.transaction.update({
+            where: { id: transaction.id },
+            data: { status: PaymentStatus.PAID, transactionStatus }
+            })
         } else {
-            transaction.status = PaymentStatus.NOTPAID
+            await this.prisma.transaction.update({
+            where: { id: transaction.id },
+            data: { status: PaymentStatus.NOTPAID, transactionStatus }
+            })
         }
+
+        return transaction
     }
 
 
@@ -160,9 +170,13 @@ export class TransactionsService {
             .update(JSON.stringify(webHookDto))
             .digest('hex')
 
-            isValidEvent = hash && signature && timingSafeEqual(Buffer.from(hash), Buffer.from(signature))
+            isValidEvent =
+                hash &&
+                signature &&
+                timingSafeEqual(Buffer.from(hash), Buffer.from(signature))
         } catch (error) {
             //handle error
+            
         }
 
         if (!isValidEvent) {
@@ -185,7 +199,10 @@ export class TransactionsService {
         transaction.transactionStatus = transactionStatus
 
 
-        await this.prisma.transaction.create({ data: transaction })
+        await this.prisma.transaction.update({
+            where: { id: transaction.id },
+            data: transaction
+        })
 
         return true
     }

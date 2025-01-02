@@ -33,7 +33,7 @@ export class CreateUserDto{
     password: string;
 
 
-    @IsEnum({ type: Role, default: Role.USER })
-    @ApiProperty()
+    @IsEnum(Role)
+    @ApiProperty({enum: Role, default: Role.USER})
     role: Role
 }

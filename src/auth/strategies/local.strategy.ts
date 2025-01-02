@@ -16,8 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 
 
-    validate(loginDto: LoginDto) {
-        if(loginDto.password === "") throw new UnauthorizedException("Please provide a password")
-        return this.authSevice.validateUser(loginDto)
+    validate(email: string, password: string) {
+        if(password === "") throw new UnauthorizedException("Please provide a password")
+        return this.authSevice.validateUser(email, password)
     }
 }

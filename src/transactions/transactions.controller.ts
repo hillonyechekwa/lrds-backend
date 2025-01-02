@@ -36,7 +36,7 @@ export class TransactionsController {
         }
     }
 
-    @Get()
+    @Get("/find")
     async findTransactions() {
         return await this.transactionsService.findMany()
     }

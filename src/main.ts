@@ -14,6 +14,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true
   }))
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+  
   //swagger setup
   const config = new DocumentBuilder()
   .setTitle("lordes")
@@ -41,7 +42,9 @@ async function bootstrap() {
   //global prisma exception filter
 
 
-  await app.listen(8000);
+  await app.listen(8000, () => {
+    console.log("lorde's api running on port 8000")
+  });
 }
 bootstrap();
 
